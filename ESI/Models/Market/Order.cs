@@ -35,7 +35,7 @@ namespace ESI.Models
         /// Gets or sets the station in which this order was placed
         /// </summary>
         [JsonProperty("location_id")]
-        public int LocationID { get; set; }
+        public long LocationID { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum volume of the order

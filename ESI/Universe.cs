@@ -410,7 +410,7 @@ namespace ESI
         /// <returns>A collection of category ids</returns>
         public static async Task<IEnumerable<int>> GetItemCategoriesAsync()
         {
-            string url = Universe.GetItemCategories();
+            string url = GetItemCategories();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<int>(responses.ElementAt(0));
@@ -1476,7 +1476,7 @@ namespace ESI
         /// </summary>
         /// <param name="structureIds">Structure ids</param>
         /// <returns>A collection of <see cref="Structure"/></returns>
-        public static async Task<IEnumerable<Structure>> GetStructureInformationAsync(IEnumerable<int> structureIds)
+        public static async Task<IEnumerable<Structure>> GetStructureInformationAsync(IEnumerable<long> structureIds)
         {
             var urls = new List<string>();
             foreach (var id in structureIds)
