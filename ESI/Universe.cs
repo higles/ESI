@@ -292,7 +292,7 @@ namespace ESI
         /// <returns>A collection of <see cref="Race"/></returns>
         public static async Task<IEnumerable<Race>> GetCharacterRacesAsync()
         {
-            string url = Universe.GetBloodlines();
+            string url = GetCharacterRaces();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<Race>(responses.ElementAt(0));
@@ -306,7 +306,7 @@ namespace ESI
         /// <returns>A collection of <see cref="Bloodline"/></returns>
         public static async Task<IEnumerable<Bloodline>> GetBloodlinesAsync()
         {
-            string url = Universe.GetBloodlines();
+            string url = GetBloodlines();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<Bloodline>(responses.ElementAt(0));
@@ -344,7 +344,7 @@ namespace ESI
         /// <returns>A collection of <see cref="Ancestry"/></returns>
         public static async Task<IEnumerable<Ancestry>> GetAncestriesAsync()
         {
-            string url = Universe.GetAncestries();
+            string url = GetAncestries();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<Ancestry>(responses.ElementAt(0));
@@ -423,7 +423,7 @@ namespace ESI
         /// <returns>A <see cref="Category"/></returns>
         public static async Task<Category> GetItemCategoryInformationAsync(int categoryId)
         {
-            string url = Universe.GetItemCategoryInformation(categoryId);
+            string url = GetItemCategoryInformation(categoryId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Category>(responses.ElementAt(0));
@@ -440,7 +440,7 @@ namespace ESI
 
             foreach (var id in categoryIds)
             {
-                urls.Add(Universe.GetItemCategoryInformation(id));
+                urls.Add(GetItemCategoryInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -472,7 +472,7 @@ namespace ESI
             IEnumerable<int> responseIds = new List<int>();
             do
             {
-                string url = Universe.GetItemGroups(i);
+                string url = GetItemGroups(i);
                 var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
                 responseIds = await ESI.ReadResponseAsArrayAsync<int>(responses.ElementAt(0));
@@ -489,7 +489,7 @@ namespace ESI
         /// <returns>A <see cref="Group"/></returns>
         public static async Task<Group> GetItemGroupInformationAsync(int groupId)
         {
-            string url = Universe.GetItemGroupInformation(groupId);
+            string url = GetItemGroupInformation(groupId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Group>(responses.ElementAt(0));
@@ -506,7 +506,7 @@ namespace ESI
 
             foreach (var id in groupIds)
             {
-                urls.Add(Universe.GetItemGroupInformation(id));
+                urls.Add(GetItemGroupInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -589,7 +589,7 @@ namespace ESI
         /// <returns>An <see cref="Item"/></returns>
         public static async Task<Item> GetTypeInformationAsync(int typeId)
         {
-            string url = Universe.GetTypeInformation(typeId);
+            string url = GetTypeInformation(typeId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Item>(responses.ElementAt(0));
@@ -606,7 +606,7 @@ namespace ESI
 
             foreach (var id in typeIds)
             {
-                urls.Add(Universe.GetTypeInformation(id));
+                urls.Add(GetTypeInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -708,7 +708,7 @@ namespace ESI
         /// <returns>A collection of region ids</returns>
         public static async Task<IEnumerable<int>> GetRegionsAsync()
         {
-            string url = Universe.GetRegions();
+            string url = GetRegions();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<int>(responses.ElementAt(0));
@@ -720,7 +720,7 @@ namespace ESI
         /// <returns>A <see cref="Region"/></returns>
         public static async Task<Region> GetRegionInformationAsync(int regionId)
         {
-            string url = Universe.GetRegionInformation(regionId);
+            string url = GetRegionInformation(regionId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Region>(responses.ElementAt(0));
@@ -737,7 +737,7 @@ namespace ESI
 
             foreach (var id in regionIds)
             {
-                urls.Add(Universe.GetRegionInformation(id));
+                urls.Add(GetRegionInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -764,7 +764,7 @@ namespace ESI
         /// <returns>A collection of constellation ids</returns>
         public static async Task<IEnumerable<int>> GetConstellationsAsync()
         {
-            string url = Universe.GetConstellations();
+            string url = GetConstellations();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<int>(responses.ElementAt(0));
@@ -777,7 +777,7 @@ namespace ESI
         /// <returns>A <see cref="Constellation"/></returns>
         public static async Task<Constellation> GetConstellationInformationAsync(int constellationId)
         {
-            string url = Universe.GetConstellationInformation(constellationId);
+            string url = GetConstellationInformation(constellationId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Constellation>(responses.ElementAt(0));
@@ -794,7 +794,7 @@ namespace ESI
 
             foreach (var id in constellationIds)
             {
-                urls.Add(Universe.GetConstellationInformation(id));
+                urls.Add(GetConstellationInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -851,7 +851,7 @@ namespace ESI
         /// <returns>A collection of solar system ids</returns>
         public static async Task<IEnumerable<int>> GetSolarSystemsAsync()
         {
-            string url = Universe.GetSolarSystems();
+            string url = GetSolarSystems();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<int>(responses.ElementAt(0));
@@ -864,7 +864,7 @@ namespace ESI
         /// <returns>A <see cref="SolarSystem"/></returns>
         public static async Task<SolarSystem> GetSolarSystemInformationAsync(int systemId)
         {
-            string url = Universe.GetSolarSystemInformation(systemId);
+            string url = GetSolarSystemInformation(systemId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<SolarSystem>(responses.ElementAt(0));
@@ -881,7 +881,7 @@ namespace ESI
 
             foreach (var id in systemIds)
             {
-                urls.Add(Universe.GetSolarSystemInformation(id));
+                urls.Add(GetSolarSystemInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -969,7 +969,7 @@ namespace ESI
         /// <returns>A <see cref="Star"/></returns>
         public static async Task<Star> GetStarInformationAsync(int starId)
         {
-            string url = Universe.GetStarInformation(starId);
+            string url = GetStarInformation(starId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Star>(responses.ElementAt(0));
@@ -985,7 +985,7 @@ namespace ESI
             var urls = new List<string>();
             foreach (var id in starIds)
             {
-                urls.Add(Universe.GetStarInformation(id));
+                urls.Add(GetStarInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -1092,7 +1092,7 @@ namespace ESI
         /// <returns>A <see cref="Planet"/></returns>
         public static async Task<Planet> GetPlanetInformationAsync(int planetId)
         {
-            string url = Universe.GetPlanetInformation(planetId);
+            string url = GetPlanetInformation(planetId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
             var planet = await ESI.ReadResponseAsObjectAsync<Planet>(responses.ElementAt(0));
             var system = await GetSolarSystemInformationAsync(planet.SystemID);
@@ -1112,7 +1112,7 @@ namespace ESI
             var urls = new List<string>();
             foreach (var id in planetIds)
             {
-                urls.Add(Universe.GetPlanetInformation(id));
+                urls.Add(GetPlanetInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -1247,7 +1247,7 @@ namespace ESI
         /// <returns>A <see cref="Moon"/></returns>
         public static async Task<Moon> GetMoonInformationAsync(int moonId)
         {
-            string url = Universe.GetMoonInformation(moonId);
+            string url = GetMoonInformation(moonId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Moon>(responses.ElementAt(0));
@@ -1263,7 +1263,7 @@ namespace ESI
             var urls = new List<string>();
             foreach (var id in moonIds)
             {
-                urls.Add(Universe.GetMoonInformation(id));
+                urls.Add(GetMoonInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -1420,7 +1420,7 @@ namespace ESI
         /// <returns>A <see cref="Station"/></returns>
         public static async Task<Station> GetStationInformationAsync(int stationId)
         {
-            string url = Universe.GetStationInformation(stationId);
+            string url = GetStationInformation(stationId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Station>(responses.ElementAt(0));
@@ -1436,7 +1436,7 @@ namespace ESI
             var urls = new List<string>();
             foreach (var id in stationIds)
             {
-                urls.Add(Universe.GetStationInformation(id));
+                urls.Add(GetStationInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -1452,7 +1452,7 @@ namespace ESI
         /// <returns>A collection of structure ids</returns>
         public static async Task<IEnumerable<long>> ListAllPublicStructuresAsync()
         {
-            string url = Universe.ListAllPublicStructures();
+            string url = ListAllPublicStructures();
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsArrayAsync<long>(responses.ElementAt(0));
@@ -1465,7 +1465,7 @@ namespace ESI
         /// <returns>A <see cref="Structure"/></returns>
         public static async Task<Structure> GetStructureInformationAsync(long structureId)
         {
-            string url = Universe.GetStructureInformation(structureId);
+            string url = GetStructureInformation(structureId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Structure>(responses.ElementAt(0));
@@ -1481,7 +1481,7 @@ namespace ESI
             var urls = new List<string>();
             foreach (var id in structureIds)
             {
-                urls.Add(Universe.GetStationInformation(id));
+                urls.Add(GetStructureInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
@@ -1498,7 +1498,7 @@ namespace ESI
         /// <returns>A <see cref="Stargate"/></returns>
         public static async Task<Stargate> GetStargateInformationAsync(int stargateId)
         {
-            string url = Universe.GetStargateInformation(stargateId);
+            string url = GetStargateInformation(stargateId);
             var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
 
             return await ESI.ReadResponseAsObjectAsync<Stargate>(responses.ElementAt(0));
@@ -1514,7 +1514,7 @@ namespace ESI
             var urls = new List<string>();
             foreach (var id in stargateIds)
             {
-                urls.Add(Universe.GetStargateInformation(id));
+                urls.Add(GetStargateInformation(id));
             }
 
             var responses = await ESI.MakeEsiRequestsAsync(urls);
