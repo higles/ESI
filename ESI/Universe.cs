@@ -477,6 +477,8 @@ namespace ESI
 
                 responseIds = await ESI.ReadResponseAsArrayAsync<int>(responses.ElementAt(0));
                 groupIds.AddRange(responseIds);
+
+                i++;
             } while (responseIds.Count() >= 1000);
 
             return groupIds;
