@@ -436,23 +436,538 @@ namespace ESI.Tests
 
         #region Region/Constellation/System/Star/Planet/Moon
         #region Region
+        [Fact]
+        public async Task GettingAllRegionsIsNotNullOrEmpty()
+        {
+            var regions = await Universe.GetRegionsAsync();
+            Assert.NotNull(regions);
+            Assert.NotEmpty(regions);
+        }
 
+        [Fact]
+        public async Task CanGetInformationForRegion()
+        {
+            int regionId = 10000002;
+            var region = await Universe.GetRegionInformationAsync(regionId);
+
+            Assert.NotNull(region);
+            Assert.Equal(regionId, region.ID);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var regions = await Universe.GetRegionInformationAsync(regionIds);
+
+            Assert.NotNull(regions);
+            Assert.Equal(regionIds.Count(), regions.Count());
+
+            foreach (var id in regionIds)
+            {
+                Assert.Contains(regions, c => c.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForAllRegions()
+        {
+            var regionIds = await Universe.GetRegionsAsync();
+            var regions = await Universe.GetRegionInformationAsync();
+
+            Assert.NotNull(regions);
+            Assert.Equal(regionIds.Count(), regions.Count());
+
+            foreach (var id in regionIds)
+            {
+                Assert.Contains(regions, c => c.ID == id);
+            }
+        }
         #endregion
 
         #region Constellation
+        [Fact]
+        public async Task GettingAllConstellationsIsNotNullOrEmpty()
+        {
+            var constellations = await Universe.GetConstellationsAsync();
+            Assert.NotNull(constellations);
+            Assert.NotEmpty(constellations);
+        }
 
+        [Fact]
+        public async Task CanGetInformationForConstellation()
+        {
+            int constellationId = 20000020;
+            var constellation = await Universe.GetConstellationInformationAsync(constellationId);
+
+            Assert.NotNull(constellation);
+            Assert.Equal(constellationId, constellation.ID);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForConstellations()
+        {
+            List<int> constellationIds = new List<int>() { 20000020, 20000389, 20000322 };
+            var constellations = await Universe.GetConstellationInformationAsync(constellationIds);
+
+            Assert.NotNull(constellations);
+            Assert.Equal(constellationIds.Count(), constellations.Count());
+
+            foreach (var id in constellationIds)
+            {
+                Assert.Contains(constellations, c => c.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForAllConstellations()
+        {
+            var constellationIds = await Universe.GetConstellationsAsync();
+            var constellations = await Universe.GetConstellationInformationAsync();
+
+            Assert.NotNull(constellations);
+            Assert.Equal(constellationIds.Count(), constellations.Count());
+
+            foreach (var id in constellationIds)
+            {
+                Assert.Contains(constellations, c => c.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForConstellationsInARegion()
+        {
+            var regionId = 10000002;
+            var constellations = await Universe.GetConstellationInformationByRegionAsync(regionId);
+            var region = await Universe.GetRegionInformationAsync(regionId);
+
+            Assert.NotNull(constellations);
+            Assert.Equal(region.Constellations.Count, constellations.Count());
+
+            foreach (var id in region.Constellations)
+            {
+                Assert.Contains(constellations, c => c.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForConstellationsInRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var constellations = await Universe.GetConstellationInformationByRegionAsync(regionIds);
+            var regions = await Universe.GetRegionInformationAsync(regionIds);
+
+            var constellationIdCount = regions.Sum(r => r.Constellations.Count);
+
+            Assert.NotNull(constellations);
+            Assert.Equal(constellationIdCount, constellations.Count());
+
+            foreach (var region in regions)
+            {
+                foreach (var id in region.Constellations)
+                {
+                    Assert.Contains(constellations, c => c.ID == id);
+                }
+            }
+        }
         #endregion
 
         #region System
+        [Fact]
+        public async Task GettingAllSolarSystemsIsNotNullOrEmpty()
+        {
+            var systems = await Universe.GetSolarSystemsAsync();
+            Assert.NotNull(systems);
+            Assert.NotEmpty(systems);
+        }
 
+        [Fact]
+        public async Task CanGetInformationForSolarSystem()
+        {
+            int systemId = 30000142;
+            var system = await Universe.GetSolarSystemInformationAsync(systemId);
+
+            Assert.NotNull(system);
+            Assert.Equal(systemId, system.ID);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForSolarSystems()
+        {
+            List<int> systemIds = new List<int>() { 30000142, 30002659, 30002187 };
+            var systems = await Universe.GetSolarSystemInformationAsync(systemIds);
+
+            Assert.NotNull(systems);
+            Assert.Equal(systemIds.Count(), systems.Count());
+
+            foreach (var id in systemIds)
+            {
+                Assert.Contains(systems, s => s.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForAllSolarSystems()
+        {
+            var systemIds = await Universe.GetSolarSystemsAsync();
+            var systems = await Universe.GetSolarSystemInformationAsync();
+
+            Assert.NotNull(systems);
+            Assert.Equal(systemIds.Count(), systems.Count());
+
+            foreach (var id in systemIds)
+            {
+                Assert.Contains(systems, s => s.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForSolarSystemsInAConstellation()
+        {
+            int constellationId = 20000020;
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationId);
+            var constellation = await Universe.GetConstellationInformationAsync(constellationId);
+
+            Assert.NotNull(systems);
+            Assert.Equal(constellation.Systems.Count, systems.Count());
+
+            foreach (var id in constellation.Systems)
+            {
+                Assert.Contains(systems, s => s.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForSolarSystemsInConstellations()
+        {
+            List<int> constellationIds = new List<int>() { 20000020, 20000389, 20000322 };
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationIds);
+            var constellations = await Universe.GetConstellationInformationAsync(constellationIds);
+
+            var systemIdCount = constellations.Sum(c => c.Systems.Count);
+
+            Assert.NotNull(systems);
+            Assert.Equal(systemIdCount, systems.Count());
+
+            foreach (var constellation in constellations)
+            {
+                foreach (var id in constellation.Systems)
+                {
+                    Assert.Contains(systems, s => s.ID == id);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForSolarSystemsInARegion()
+        {
+            var regionId = 10000002;
+            var constellations = await Universe.GetConstellationInformationByRegionAsync(regionId);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionId);
+
+            var systemIdCount = constellations.Sum(c => c.Systems.Count);
+
+            Assert.NotNull(systems);
+            Assert.Equal(systemIdCount, systems.Count());
+            
+            foreach (var constellation in constellations)
+            {
+                foreach (var id in constellation.Systems)
+                {
+                    Assert.Contains(systems, s => s.ID == id);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForSolarSystemsInRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var constellations = await Universe.GetConstellationInformationByRegionAsync(regionIds);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionIds);
+
+            var systemIdCount = constellations.Sum(c => c.Systems.Count);
+
+            Assert.NotNull(systems);
+            Assert.Equal(systemIdCount, systems.Count());
+
+            foreach (var constellation in constellations)
+            {
+                foreach (var id in constellation.Systems)
+                {
+                    Assert.Contains(systems, s => s.ID == id);
+                }
+            }
+        }
         #endregion
 
         #region Star
+        [Fact]
+        public async Task CanGetInformationForStar()
+        {
+            int starId = 40009076;
+            var star = await Universe.GetStarInformationAsync(starId);
 
+            Assert.NotNull(star);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStars()
+        {
+            List<int> starIds = new List<int>() { 40009076, 40169265, 40139383 };
+            var stars = await Universe.GetStarInformationAsync(starIds);
+
+            Assert.NotNull(stars);
+            Assert.Equal(starIds.Count(), stars.Count());
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStarInASolarSystem()
+        {
+            int systemId = 30000142;
+            var star = await Universe.GetStarInformationBySolarSystemAsync(systemId);
+            var system = await Universe.GetSolarSystemInformationAsync(systemId);
+
+            Assert.NotNull(star);
+            Assert.Equal(system.ID, star.SolarSystemID);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStarsInSolarSystems()
+        {
+            List<int> systemIds = new List<int>() { 30000142, 30002659, 30002187 };
+            var stars = await Universe.GetStarInformationBySolarSystemAsync(systemIds);
+            var systems = await Universe.GetSolarSystemInformationAsync(systemIds);
+
+            Assert.NotNull(stars);
+            Assert.Equal(systems.Count(), stars.Count());
+
+            foreach (var id in systemIds)
+            {
+                Assert.Contains(stars, s => s.SolarSystemID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStarsInAConstellation()
+        {
+            var constellationId = 20000020;
+            var stars = await Universe.GetStarInformationByConstellationAsync(constellationId);
+            var constellation = await Universe.GetConstellationInformationAsync(constellationId);
+
+            Assert.NotNull(stars);
+            Assert.Equal(constellation.Systems.Count(), stars.Count());
+
+            foreach (var id in constellation.Systems)
+            {
+                Assert.Contains(stars, s => s.SolarSystemID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStarsInConstellations()
+        {
+            List<int> constellationIds = new List<int>() { 20000020, 20000389, 20000322 };
+            var stars = await Universe.GetStarInformationByConstellationAsync(constellationIds);
+            var constellations = await Universe.GetConstellationInformationAsync(constellationIds);
+
+            var systemIdCount = constellations.Sum(c => c.Systems.Count);
+
+            Assert.NotNull(stars);
+            Assert.Equal(systemIdCount, stars.Count());
+
+            foreach (var constellation in constellations)
+            {
+                foreach (var id in constellation.Systems)
+                {
+                    Assert.Contains(stars, s => s.SolarSystemID == id);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStarsInARegion()
+        {
+            int regionId = 10000002;
+            var stars = await Universe.GetStarInformationByRegionAsync(regionId);
+            var constellations = await Universe.GetConstellationInformationByRegionAsync(regionId);
+
+            var systemIdCount = constellations.Sum(c => c.Systems.Count);
+
+            Assert.NotNull(stars);
+            Assert.Equal(systemIdCount, stars.Count());
+
+            foreach (var constellation in constellations)
+            {
+                foreach (var id in constellation.Systems)
+                {
+                    Assert.Contains(stars, s => s.SolarSystemID == id);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStarsInRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var stars = await Universe.GetStarInformationByRegionAsync(regionIds);
+            var constellations = await Universe.GetConstellationInformationByRegionAsync(regionIds);
+
+            var systemIdCount = constellations.Sum(c => c.Systems.Count);
+
+            Assert.NotNull(stars);
+            Assert.Equal(systemIdCount, stars.Count());
+
+            foreach (var constellation in constellations)
+            {
+                foreach (var id in constellation.Systems)
+                {
+                    Assert.Contains(stars, s => s.SolarSystemID == id);
+                }
+            }
+        }
         #endregion
 
         #region Planet
+        [Fact]
+        public async Task CanGetInformationForPlanet()
+        {
+            int planetId = 40139384;
+            var planet = await Universe.GetPlanetInformationAsync(planetId);
 
+            Assert.NotNull(planet);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanets()
+        {
+            List<int> planetIds = new List<int>() { 40139384, 40009077, 40169266 };
+            var planets = await Universe.GetPlanetInformationAsync(planetIds);
+
+            Assert.NotNull(planets);
+            Assert.Equal(planetIds.Count(), planets.Count());
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanetInASolarSystem()
+        {
+            int systemId = 30000142;
+            var planets = await Universe.GetPlanetInformationBySolarSystemAsync(systemId);
+            var system = await Universe.GetSolarSystemInformationAsync(systemId);
+
+            Assert.NotNull(planets);
+            Assert.Equal(system.Planets.Count(), planets.Count());
+
+            foreach (var planet in system.Planets)
+            {
+                Assert.Contains(planets, p => p.ID == planet.ID);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanetsInSolarSystems()
+        {
+            List<int> systemIds = new List<int>() { 30000142, 30002659, 30002187 };
+            var planets = await Universe.GetPlanetInformationBySolarSystemAsync(systemIds);
+            var systems = await Universe.GetSolarSystemInformationAsync(systemIds);
+
+            var planetCount = systems.Sum(s => s.Planets.Count);
+
+            Assert.NotNull(planets);
+            Assert.Equal(planetCount, planets.Count());
+
+            foreach (var system in systems)
+            {
+                foreach (var planet in system.Planets)
+                {
+                    Assert.Contains(planets, p => p.ID == planet.ID);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanetsInAConstellation()
+        {
+            var constellationId = 20000020;
+            var planets = await Universe.GetPlanetInformationByConstellationAsync(constellationId);
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationId);
+
+            var planetCount = systems.Sum(s => s.Planets.Count);
+
+            Assert.NotNull(planets);
+            Assert.Equal(planetCount, planets.Count());
+
+            foreach (var system in systems)
+            {
+                foreach (var planet in system.Planets)
+                {
+                    Assert.Contains(planets, p => p.ID == planet.ID);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanetsInConstellations()
+        {
+            List<int> constellationIds = new List<int>() { 20000020, 20000389, 20000322 };
+            var planets = await Universe.GetPlanetInformationByConstellationAsync(constellationIds);
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationIds);
+
+            var planetCount = systems.Sum(s => s.Planets.Count);
+
+            Assert.NotNull(planets);
+            Assert.Equal(planetCount, planets.Count());
+
+            foreach (var system in systems)
+            {
+                foreach (var planet in system.Planets)
+                {
+                    Assert.Contains(planets, p => p.ID == planet.ID);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanetsInARegion()
+        {
+            int regionId = 10000002;
+            var planets = await Universe.GetPlanetInformationByRegionAsync(regionId);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionId);
+
+            var planetCount = systems.Sum(s => s.Planets.Count);
+
+            Assert.NotNull(planets);
+            Assert.Equal(planetCount, planets.Count());
+
+            foreach (var system in systems)
+            {
+                foreach (var planet in system.Planets)
+                {
+                    Assert.Contains(planets, p => p.ID == planet.ID);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForPlanetsInRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var planets = await Universe.GetPlanetInformationByRegionAsync(regionIds);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionIds);
+
+            var planetCount = systems.Sum(s => s.Planets.Count);
+
+            Assert.NotNull(planets);
+            Assert.Equal(planetCount, planets.Count());
+
+            foreach (var system in systems)
+            {
+                foreach (var planet in system.Planets)
+                {
+                    Assert.Contains(planets, p => p.ID == planet.ID);
+                }
+            }
+        }
         #endregion
 
         #region Moon

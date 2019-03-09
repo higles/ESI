@@ -1099,7 +1099,9 @@ namespace ESI
             var planet = await ESI.ReadResponseAsObjectAsync<Planet>(responses.ElementAt(0));
             var system = await GetSolarSystemInformationAsync(planet.SystemID);
 
-            planet.Moons = system.Planets.First(p => p.ID == planetId).Moons.ToList();
+            var systemPlanet = system.Planets.First(p => p.ID == planet.ID);
+            planet.Moons = systemPlanet.Moons;
+            planet.AsteroidBelts = systemPlanet.AsteroidBelts;
 
             return planet;
         }
@@ -1128,7 +1130,9 @@ namespace ESI
             foreach (var planet in planets)
             {
                 var system = systems.First(s => s.Planets.Any(p => p.ID == planet.ID));
-                planet.Moons = system.Planets.First(p => p.ID == planet.ID).Moons;
+                var systemPlanet = system.Planets.First(p => p.ID == planet.ID);
+                planet.Moons = systemPlanet.Moons;
+                planet.AsteroidBelts = systemPlanet.AsteroidBelts;
             }
 
             return planets;
