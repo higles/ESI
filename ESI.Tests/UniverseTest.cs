@@ -1225,7 +1225,7 @@ namespace ESI.Tests
             Assert.NotNull(asteroidBelts);
             Assert.Equal(planet.AsteroidBelts.Count(), asteroidBelts.Count());
 
-            Assert.All(asteroidBelts, ab => ab.Name.StartsWith(planet.Name));
+            Assert.All(asteroidBelts, ab => ab.Name.StartsWith(planet.Name + " "));
         }
 
         [Fact]
@@ -1242,7 +1242,7 @@ namespace ESI.Tests
 
             foreach (var planet in planets)
             {
-                var planetBelts = asteroidBelts.Where(ab => ab.Name.StartsWith(planet.Name)).ToList();
+                var planetBelts = asteroidBelts.Where(ab => ab.Name.StartsWith(planet.Name + " ")).ToList();
                 Assert.Equal(planet.AsteroidBelts.Count, planetBelts.Count);
             }
         }
@@ -1391,15 +1391,356 @@ namespace ESI.Tests
 
         #region Station/Structure/Stargate
         #region Station
+        [Fact]
+        public async Task CanGetInformationForStation()
+        {
+            int stationId = 60002569;
+            var station = await Universe.GetStationInformationAsync(stationId);
 
+            Assert.NotNull(station);
+            Assert.Equal(stationId, station.ID);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStations()
+        {
+            List<int> stationIds = new List<int>() { 60002569, 60002953, 60011866 };
+            var stations = await Universe.GetStationInformationAsync(stationIds);
+
+            Assert.NotNull(stations);
+            Assert.Equal(stationIds.Count(), stations.Count());
+
+            foreach(var id in stationIds)
+            {
+                Assert.Contains(stations, s => s.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInAMoon()
+        {
+            int moonId = 40139396;
+            var stations = await Universe.GetStationInformationByMoonAsync(moonId);
+            var moon = await Universe.GetMoonInformationAsync(moonId);
+
+            Assert.NotNull(stations);
+            Assert.All(stations, s => s.Name.StartsWith(moon.Name + " "));
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInMoons()
+        {
+            List<int> moonIds = new List<int>() { 40139396, 40009089, 40169269 };
+            var stations = await Universe.GetStationInformationByMoonAsync(moonIds);
+            var moons = await Universe.GetMoonInformationAsync(moonIds);
+
+            Assert.NotNull(stations);
+            Assert.All(stations, s => moons.Any(m => s.Name.StartsWith(m.Name + " ")));
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInAPlanet()
+        {
+            int planetId = 40139384;
+            var stations = await Universe.GetStationInformationByPlanetAsync(planetId);
+            var planet = await Universe.GetPlanetInformationAsync(planetId);
+
+            Assert.NotNull(stations);
+            Assert.All(stations, s => s.Name.StartsWith(planet.Name + " "));
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInPlanets()
+        {
+            List<int> planetIds = new List<int>() { 40139384, 40009077, 40169266 };
+            var stations = await Universe.GetStationInformationByPlanetAsync(planetIds);
+            var planets = await Universe.GetPlanetInformationAsync(planetIds);
+
+            Assert.NotNull(stations);
+            Assert.All(stations, s => planets.Any(p => s.Name.StartsWith(p.Name + " ")));
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInASolarSystem()
+        {
+            int systemId = 30000142;
+            var stations = await Universe.GetStationInformationBySolarSystemAsync(systemId);
+            var system = await Universe.GetSolarSystemInformationAsync(systemId);
+
+            Assert.NotNull(stations);
+            Assert.Equal(system.Stations.Count, stations.Count());
+
+            Assert.All(stations, s => s.SystemID.Equals(system.ID));
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInSolarSystems()
+        {
+            List<int> systemIds = new List<int>() { 30000142, 30002659, 30002187 };
+            var stations = await Universe.GetStationInformationBySolarSystemAsync(systemIds);
+            var systems = await Universe.GetSolarSystemInformationAsync(systemIds);
+
+            var stationCount = systems.Sum(s => s.Stations.Count);
+
+            Assert.NotNull(stations);
+            Assert.Equal(stationCount, stations.Count());
+
+            foreach(var system in systems)
+            {
+                var systemStations = stations.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stations.Count, systemStations.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInAConstellation()
+        {
+            int constellationId = 20000020;
+            var stations = await Universe.GetStationInformationByConstellationAsync(constellationId);
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationId);
+
+            var stationCount = systems.Sum(s => s.Stations.Count);
+
+            Assert.NotNull(stations);
+            Assert.Equal(stationCount, stations.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStations = stations.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stations.Count, systemStations.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInConstellations()
+        {
+            List<int> constellationIds = new List<int>() { 20000020, 20000389, 20000322 };
+            var stations = await Universe.GetStationInformationByConstellationAsync(constellationIds);
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationIds);
+
+            var stationCount = systems.Sum(s => s.Stations.Count);
+
+            Assert.NotNull(stations);
+            Assert.Equal(stationCount, stations.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStations = stations.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stations.Count, systemStations.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInARegion()
+        {
+            var regionId = 10000002;
+            var stations = await Universe.GetStationInformationByRegionAsync(regionId);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionId);
+
+            var stationCount = systems.Sum(s => s.Stations.Count);
+
+            Assert.NotNull(stations);
+            Assert.Equal(stationCount, stations.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStations = stations.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stations.Count, systemStations.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStationsInRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var stations = await Universe.GetStationInformationByRegionAsync(regionIds);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionIds);
+
+            var stationCount = systems.Sum(s => s.Stations.Count);
+
+            Assert.NotNull(stations);
+            Assert.Equal(stationCount, stations.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStations = stations.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stations.Count, systemStations.Count);
+            }
+        }
         #endregion
 
         #region Structure
+        [Fact]
+        public async Task GettingAllPublicStructuresIsNotNullOrEmpty()
+        {
+            var structures = await Universe.ListAllPublicStructuresAsync();
+            Assert.NotNull(structures);
+            Assert.NotEmpty(structures);
+        }
 
+        [Fact]
+        public async Task CanGetInformationForStructure()
+        {
+            long structureId = 1023126135158;
+            var structure = await Universe.GetStructureInformationAsync(structureId);
+
+            Assert.NotNull(structure);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStructures()
+        {
+            List<long> structureIds = new List<long>() { 1023126135158, 1027436601364, 1026466808012 };
+            var structures = await Universe.GetStructureInformationAsync(structureIds);
+
+            Assert.NotNull(structures);
+            Assert.Equal(structureIds.Count, structures.Count());
+        }
         #endregion
 
         #region Stargate
+        [Fact]
+        public async Task CanGetInformationForStargate()
+        {
+            int stargateId = 50001250;
+            var stargate = await Universe.GetStargateInformationAsync(stargateId);
 
+            Assert.NotNull(stargate);
+            Assert.Equal(stargateId, stargate.ID);
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargates()
+        {
+            List<int> stargateIds = new List<int>() { 50001250, 50007873, 50013733 };
+            var stargates = await Universe.GetStargateInformationAsync(stargateIds);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(stargateIds.Count(), stargates.Count());
+
+            foreach (var id in stargateIds)
+            {
+                Assert.Contains(stargates, s => s.ID == id);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargatesInASolarSystem()
+        {
+            int systemId = 30000142;
+            var stargates = await Universe.GetStargateInformationBySolarSystemAsync(systemId);
+            var system = await Universe.GetSolarSystemInformationAsync(systemId);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(system.Stargates.Count, stargates.Count());
+
+            Assert.All(stargates, s => s.SystemID.Equals(system.ID));
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargatesInSolarSystems()
+        {
+            List<int> systemIds = new List<int>() { 30000142, 30002659, 30002187 };
+            var stargates = await Universe.GetStargateInformationBySolarSystemAsync(systemIds);
+            var systems = await Universe.GetSolarSystemInformationAsync(systemIds);
+
+            var stargateCount = systems.Sum(s => s.Stargates.Count);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(stargateCount, stargates.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStargates = stargates.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stargates.Count, systemStargates.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargatesInAConstellation()
+        {
+            int constellationId = 20000020;
+            var stargates = await Universe.GetStargateInformationByConstellationAsync(constellationId);
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationId);
+
+            var stargateCount = systems.Sum(s => s.Stargates.Count);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(stargateCount, stargates.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStargates = stargates.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stargates.Count, systemStargates.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargatesInConstellations()
+        {
+            List<int> constellationIds = new List<int>() { 20000020, 20000389, 20000322 };
+            var stargates = await Universe.GetStargateInformationByConstellationAsync(constellationIds);
+            var systems = await Universe.GetSolarSystemInformationByConstellationAsync(constellationIds);
+
+            var stargateCount = systems.Sum(s => s.Stargates.Count);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(stargateCount, stargates.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStargates = stargates.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stargates.Count, systemStargates.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargatesInARegion()
+        {
+            var regionId = 10000002;
+            var stargates = await Universe.GetStargateInformationByRegionAsync(regionId);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionId);
+
+            var stargateCount = systems.Sum(s => s.Stargates.Count);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(stargateCount, stargates.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStargates = stargates.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stargates.Count, systemStargates.Count);
+            }
+        }
+
+        [Fact]
+        public async Task CanGetInformationForStargatesInRegions()
+        {
+            List<int> regionIds = new List<int>() { 10000002, 10000032, 10000043 };
+            var stargates = await Universe.GetStargateInformationByRegionAsync(regionIds);
+            var systems = await Universe.GetSolarSystemInformationByRegionAsync(regionIds);
+
+            var stargateCount = systems.Sum(s => s.Stargates.Count);
+
+            Assert.NotNull(stargates);
+            Assert.Equal(stargateCount, stargates.Count());
+
+            foreach (var system in systems)
+            {
+                var systemStargates = stargates.Where(s => s.SystemID == system.ID).ToList();
+
+                Assert.Equal(system.Stargates.Count, systemStargates.Count);
+            }
+        }
         #endregion
         #endregion
     }

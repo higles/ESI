@@ -1613,6 +1613,160 @@ namespace ESI
 
             return await ESI.ReadResponsesAsObjectsAsync<Station>(responses);
         }
+
+        /// <summary>
+        /// Get information for stations around a moon
+        /// </summary>
+        /// <param name="moonId">Moon id</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByMoonAsync(int moonId)
+        {
+            var moon = await GetMoonInformationAsync(moonId);
+            var systemStations = await GetStationInformationBySolarSystemAsync(moon.SystemID);
+
+            return systemStations.Where(s => s.Name.StartsWith(moon.Name + " "));
+        }
+
+        /// <summary>
+        /// Get information for stations around a set of moons
+        /// </summary>
+        /// <param name="moonIds">Moon ids</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByMoonAsync(IEnumerable<int> moonIds)
+        {
+            var moons = await GetMoonInformationAsync(moonIds);
+            var systemStations = await GetStationInformationBySolarSystemAsync(moons.Select(m => m.SystemID).Distinct());
+
+            return systemStations.Where(s => moons.Any(m => s.Name.StartsWith(m.Name + " ")));
+        }
+
+        /// <summary>
+        /// Get information for stations around a planet
+        /// </summary>
+        /// <param name="planetId">Planet id</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByPlanetAsync(int planetId)
+        {
+            var planet = await GetMoonInformationAsync(planetId);
+            var systemStations = await GetStationInformationBySolarSystemAsync(planet.SystemID);
+
+            return systemStations.Where(s => s.Name.StartsWith(planet.Name + " "));
+        }
+
+        /// <summary>
+        /// Get information for stations around a set of planets
+        /// </summary>
+        /// <param name="planetIds">Planet ids</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByPlanetAsync(IEnumerable<int> planetIds)
+        {
+            var planets = await GetMoonInformationAsync(planetIds);
+            var systemStations = await GetStationInformationBySolarSystemAsync(planets.Select(p => p.SystemID).Distinct());
+
+            return systemStations.Where(s => planets.Any(p => s.Name.StartsWith(p.Name + " ")));
+        }
+
+        /// <summary>
+        /// Get information for stations in a system
+        /// </summary>
+        /// <param name="systemId">System id</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationBySolarSystemAsync(int systemId)
+        {
+            var system = await GetSolarSystemInformationAsync(systemId);
+
+            return await GetStationInformationAsync(system.Stations);
+        }
+
+        /// <summary>
+        /// Get information for stations in a set of systems
+        /// </summary>
+        /// <param name="systemIds">Solar System ids</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationBySolarSystemAsync(IEnumerable<int> systemIds)
+        {
+            var systems = await GetSolarSystemInformationAsync(systemIds);
+            var stationIds = new List<int>();
+
+            foreach (var system in systems)
+            {
+                stationIds.AddRange(system.Stations);
+            }
+
+            return await GetStationInformationAsync(stationIds);
+        }
+
+        /// <summary>
+        /// Get information for stations in a constellation
+        /// </summary>
+        /// <param name="constellationId">Constellation id</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByConstellationAsync(int constellationId)
+        {
+            var systems = await GetSolarSystemInformationByConstellationAsync(constellationId);
+            var stationIds = new List<int>();
+
+            foreach (var system in systems)
+            {
+                stationIds.AddRange(system.Stations);
+            }
+
+            return await GetStationInformationAsync(stationIds);
+        }
+
+        /// <summary>
+        /// Get information for stations in a set of constellations
+        /// </summary>
+        /// <param name="constellationIds">Constellation ids</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByConstellationAsync(IEnumerable<int> constellationIds)
+        {
+            var systems = await GetSolarSystemInformationByConstellationAsync(constellationIds);
+            var stationIds = new List<int>();
+
+            foreach (var system in systems)
+            {
+                stationIds.AddRange(system.Stations);
+            }
+
+            return await GetStationInformationAsync(stationIds);
+        }
+
+        /// <summary>
+        /// Get information for stations in a region
+        /// </summary>
+        /// <param name="regionId">Region id</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByRegionAsync(int regionId)
+        {
+            var systems = await GetSolarSystemInformationByRegionAsync(regionId);
+            var stationIds = new List<int>();
+
+            foreach (var system in systems)
+            {
+                stationIds.AddRange(system.Stations);
+            }
+
+            return await GetStationInformationAsync(stationIds);
+        }
+
+        /// <summary>
+        /// Get information for stations in a set of regions
+        /// </summary>
+        /// <param name="regionIds">Region ids</param>
+        /// <returns>A collection of <see cref="Station"/></returns>
+        public static async Task<IEnumerable<Station>> GetStationInformationByRegionAsync(IEnumerable<int> regionIds)
+        {
+            var systems = await GetSolarSystemInformationByRegionAsync(regionIds);
+            var stationIds = new List<int>();
+
+            foreach (var system in systems)
+            {
+                stationIds.AddRange(system.Stations);
+            }
+
+            return await GetStationInformationAsync(stationIds);
+        }
         #endregion
 
         #region Structure
