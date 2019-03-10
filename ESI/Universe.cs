@@ -702,7 +702,7 @@ namespace ESI
         #endregion
         #endregion
 
-        #region Region/Constellation/System/Star/Planet/Moon
+        #region Region/Constellation/System/Star/Planet/Moon/Asteroid Belt
         #region Region
         /// <summary>
         /// Get a list of region ids
@@ -1235,14 +1235,7 @@ namespace ESI
             }
 
             return await GetPlanetInformationByConstellationAsync(constellationIds);
-        }
-        #region Planet
-
-        #endregion
-
-        #region Moon
-
-        #endregion
+        }       
         #endregion
 
         #region Moon
@@ -1413,6 +1406,177 @@ namespace ESI
             }
 
             return await GetMoonInformationByConstellationAsync(constellationIds);
+        }
+        #endregion
+
+        #region Asteroid Belt
+        /// <summary>
+        /// Get information for an ateroid belt
+        /// </summary>
+        /// <param name="ateroidBeltId">Asteroid Belt id</param>
+        /// <returns>A <see cref="AsteroidBelt"/></returns>
+        public static async Task<AsteroidBelt> GetAsteroidBeltInformationAsync(int ateroidBeltId)
+        {
+            string url = GetAsteroidBeltInformation(ateroidBeltId);
+            var responses = await ESI.MakeEsiRequestsAsync(new List<string>() { url });
+
+            return await ESI.ReadResponseAsObjectAsync<AsteroidBelt>(responses.ElementAt(0));
+        }
+
+        /// <summary>
+        /// Get information for a set of ateroid belts
+        /// </summary>
+        /// <param name="ateroidBeltIds">Asteroid Belt ids</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationAsync(IEnumerable<int> ateroidBeltIds)
+        {
+            var urls = new List<string>();
+            foreach (var id in ateroidBeltIds)
+            {
+                urls.Add(GetAsteroidBeltInformation(id));
+            }
+
+            var responses = await ESI.MakeEsiRequestsAsync(urls);
+
+            return await ESI.ReadResponsesAsObjectsAsync<AsteroidBelt>(responses);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts around a given planet
+        /// </summary>
+        /// <param name="planetId">Planet id</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationByPlanetAsync(int planetId)
+        {
+            var planet = await GetPlanetInformationAsync(planetId);
+            var system = await GetSolarSystemInformationAsync(planet.SystemID);
+            var ateroidBeltIds = system.Planets.First(p => p.ID == planetId).AsteroidBelts.ToList();
+
+            return await GetAsteroidBeltInformationAsync(ateroidBeltIds);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts around a given set of planets
+        /// </summary>
+        /// <param name="planetIds">Planet ids</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationByPlanetAsync(IEnumerable<int> planetIds)
+        {
+            var planets = await GetPlanetInformationAsync(planetIds);
+
+            var systemIds = planets.Select(p => p.SystemID).Distinct().ToList();
+            var systems = await GetSolarSystemInformationAsync(systemIds);
+
+            var ateroidBeltIds = new List<int>();
+            foreach (var system in systems)
+            {
+                planets = system.Planets.Where(p => planetIds.Any(id => id == p.ID)).ToList();
+                foreach (var planet in planets)
+                {
+                    ateroidBeltIds.AddRange(planet.AsteroidBelts);
+                }
+            }
+
+            return await GetAsteroidBeltInformationAsync(ateroidBeltIds);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts in a given solar system
+        /// </summary>
+        /// <param name="systemId">Solar System id</param>
+        /// <returns>A <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationBySolarSystemAsync(int systemId)
+        {
+            var ateroidBeltIds = new List<int>();
+            var system = await GetSolarSystemInformationAsync(systemId);
+
+            foreach (var planet in system.Planets)
+            {
+                ateroidBeltIds.AddRange(planet.AsteroidBelts);
+            }
+
+            return await GetAsteroidBeltInformationAsync(ateroidBeltIds);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts in a given set of solar systems
+        /// </summary>
+        /// <param name="systemIds">Solar System ids</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationBySolarSystemAsync(IEnumerable<int> systemIds)
+        {
+            var ateroidBeltIds = new List<int>();
+            var systems = await GetSolarSystemInformationAsync(systemIds);
+
+            foreach (var system in systems)
+            {
+                foreach (var planet in system.Planets)
+                {
+                    ateroidBeltIds.AddRange(planet.AsteroidBelts);
+                }
+            }
+
+            return await GetAsteroidBeltInformationAsync(ateroidBeltIds);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts in a given constellation
+        /// </summary>
+        /// <param name="constellationId">Constellation id</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationByConstellationAsync(int constellationId)
+        {
+            var constellation = await GetConstellationInformationAsync(constellationId);
+
+            return await GetAsteroidBeltInformationBySolarSystemAsync(constellation.Systems);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts in a given set of constellations
+        /// </summary>
+        /// <param name="constellationIds">Constellation ids</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationByConstellationAsync(IEnumerable<int> constellationIds)
+        {
+            var systemIds = new List<int>();
+            var constellations = await GetConstellationInformationAsync(constellationIds);
+
+            foreach (var constellation in constellations)
+            {
+                systemIds.AddRange(constellation.Systems);
+            }
+
+            return await GetAsteroidBeltInformationBySolarSystemAsync(systemIds);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts in a given region
+        /// </summary>
+        /// <param name="regionId">Region id</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationByRegionAsync(int regionId)
+        {
+            var region = await GetRegionInformationAsync(regionId);
+
+            return await GetAsteroidBeltInformationByConstellationAsync(region.Constellations);
+        }
+
+        /// <summary>
+        /// Get information for ateroid belts in a given set of regions
+        /// </summary>
+        /// <param name="regionIds">Region ids</param>
+        /// <returns>A collection of <see cref="AsteroidBelt"/></returns>
+        public static async Task<IEnumerable<AsteroidBelt>> GetAsteroidBeltInformationByRegionAsync(IEnumerable<int> regionIds)
+        {
+            var constellationIds = new List<int>();
+            var regions = await GetRegionInformationAsync(regionIds);
+
+            foreach (var region in regions)
+            {
+                constellationIds.AddRange(region.Constellations);
+            }
+
+            return await GetAsteroidBeltInformationByConstellationAsync(constellationIds);
         }
         #endregion
         #endregion

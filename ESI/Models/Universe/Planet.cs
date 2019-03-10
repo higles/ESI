@@ -19,13 +19,13 @@ namespace ESI.Models
         /// Gets or sets the asteroid belts associated with this planet
         /// </summary>
         [JsonProperty("asteroid_belts")]
-        public List<int> AsteroidBelts { get; set; }
+        public List<int> AsteroidBelts { get; set; } = new List<int>();
 
         /// <summary>
         /// Gets or sets the moons associated with this planet
         /// </summary>
         [JsonProperty("moons")]
-        public List<int> Moons { get; set; }
+        public List<int> Moons { get; set; } = new List<int>();
 
         /// <summary>
         /// Gets or sets the planet name
