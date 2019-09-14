@@ -8,6 +8,9 @@ namespace ESI
 {
     public static class ESI
     {
+        private const int REQUEST_AMOUNT = 100;
+        private const int MAX_TRIES = 3;
+
         /// <summary>
         /// Gets a response for the given request
         /// </summary>
@@ -16,15 +19,42 @@ namespace ESI
         public static async Task<IEnumerable<HttpResponseMessage>> MakeEsiRequestsAsync(IEnumerable<string> urls)
         {
             var client = new HttpClient();
+            var responses = new HttpResponseMessage[urls.Count()];
+            var requestUrls = urls;
 
-            // Start requests for the given urls
-            var requests = urls.Select(url => client.GetAsync(url)).ToList();
+            for (int t = 0; t < MAX_TRIES; t++)
+            {
+                for (int i = 0; i * REQUEST_AMOUNT < requestUrls.Count(); i++)
+                {
+                    // Start requests for the given urls
+                    var count = Math.Min(requestUrls.Count() - i * REQUEST_AMOUNT, REQUEST_AMOUNT);
+                    var requests = requestUrls.ToList().GetRange(i * REQUEST_AMOUNT, count).Select(url => client.GetAsync(url)).ToList();
 
-            // Wait for all the requests to finish
-            await Task.WhenAll(requests);
+                    // Wait for all the requests to finish
+                    await Task.WhenAll(requests);
 
-            // Get the responses
-            var responses = requests.Select(task => task.Result).ToList();
+                    // Get the responses
+                    foreach (var request in requests)
+                    {
+                        var response = request.Result;
+                        var index = urls.ToList().IndexOf(response.RequestMessage.RequestUri.ToString());
+                        responses[index] = response;
+                    }
+                    //responses.AddRange(requests.Select(task => task.Result).ToList());
+                }
+
+                requestUrls = responses.Where(r => !r.IsSuccessStatusCode)
+                    .Select(r => r.RequestMessage.RequestUri.ToString()).ToList();
+
+                if (requestUrls.Count() == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    int errorCount = requestUrls.Count();
+                }
+            }
 
             return responses;
         }
