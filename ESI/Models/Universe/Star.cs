@@ -11,7 +11,7 @@ namespace ESI.Models
         /// Gets or sets the age of this star in years
         /// </summary>
         [JsonProperty("age")]
-        public int Age { get; set; }
+        public long Age { get; set; }
 
         /// <summary>
         /// Gets or sets the luminosity of this star
